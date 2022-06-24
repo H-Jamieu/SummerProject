@@ -412,4 +412,4 @@ if __name__ == '__main__':
 
     for file in failedlist:
         if file not in tagged:
-            sep_image(file, img_folder, raw_img_folder,140, 16)
+            sep_image(file, img_folder, raw_img_folder,120, 16)
