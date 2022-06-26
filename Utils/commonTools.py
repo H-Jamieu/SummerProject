@@ -1,6 +1,16 @@
 import argparse
 import os
 import regex as re
+import multiprocessing
+import threading
+from functools import partial
+from contextlib import contextmanager
+
+@contextmanager
+def poolcontext(*args, **kwargs):
+    pool = multiprocessing.Pool(*args, **kwargs)
+    yield pool
+    pool.terminate()
 
 def parse_opt():
     parser = argparse.ArgumentParser()
