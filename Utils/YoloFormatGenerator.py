@@ -1,4 +1,3 @@
-
 from DummyImageGenerator import GenerateDummy
 import random
 import os
@@ -6,6 +5,7 @@ import csv
 import commonTools
 import yaml
 import customizedYaml
+
 
 def CreateTrays(len, n):
     """
@@ -16,15 +16,16 @@ def CreateTrays(len, n):
     """
     tray_list = []
     tray_0 = []
-    for i in range(0,len):
+    for i in range(0, len):
         tray_0.append(i)
     tray_list.append(tray_0)
-    for j in range(1,n):
+    for j in range(1, n):
         random.seed(j)
         tray_x = tray_0.copy()
         random.shuffle(tray_x)
         tray_list.append(tray_x)
     return tray_list
+
 
 # if __name__ == '__main__':
 #     image_path = '../Plaindata/'
@@ -65,45 +66,71 @@ def read_classes(classes_file):
     f_in.close()
     return lines
 
+
 def txt_tif(fn):
     return fn.replace('.txt', '.tif')
 
-def generate_file_list(source_dir):
+
+def generate_file_list(source_dir, grid_dir):
     """
     the source dir is recommended to be root/genus_annotation/yolo/*
     """
     yolo_files = []
     for folder in commonTools.folders(source_dir):
         source_folder = os.path.join(source_dir, folder)
-        all_files = [txt_tif(a) for a in os.listdir(source_folder)]
+        grid_folder = os.path.join(grid_dir, folder)
+        all_files = [os.path.join(grid_folder, txt_tif(a)) for a in os.listdir(source_folder)]
         yolo_files += all_files
     return yolo_files
 
-def yolo_prepare(source_dir, base_dir, target):
+
+def img2label_paths(img_paths):
+    # Define label paths as a function of image paths
+    sa, sb = f'{os.sep}grid_images{os.sep}', f'{os.sep}genus_annotation{os.sep}yolo{os.sep}'
+    # /images/, /labels/ substrings
+    return [sb.join(x.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt' for x in img_paths]
+
+
+def train_test_split(file_list, record, target, class_dict):
+    """
+    80% train, 10% validation, 10% test
+    the splitting is based on the count of classes. Objects with at least 10 image would be used for training.
+    """
+    for f in file_list:
+        core_name, slide_name, grid_no = commonTools.keyword_from_path(f)
+        matched_grid = record[(record[0] == core_name) & (record[1] == slide_name) &
+                              (record[2] == grid_no)]
+        tag = matched_grid[commonTools.get_target(target)].iloc[0]
+        tag_num = class_dict.index(tag)
+
+
+def yolo_prepare(source_dir, base_dir, target, grid_dir):
     yolo_class_dir = f'{target}_classes.txt'
-    f = open(os.path.join(base_dir,yolo_class_dir), 'r', encoding='ascii')
+    f = open(os.path.join(base_dir, yolo_class_dir), 'r', encoding='ascii')
     all_classes = [a.replace('\n', '') for a in f.readlines()]
     f.close()
     n_classes = len(all_classes)
-    file_list = generate_file_list(source_dir)
+    file_list = generate_file_list(source_dir, grid_dir)
     out_path = os.path.join(base_dir, f'yolo_{target}_images.txt')
-    yaml_path = os.path.join(base_dir,'yolo_test.yaml')
+    yaml_path = os.path.join(base_dir, 'yolo_test.yaml')
     yaml_data = {'path': base_dir, 'train': f'yolo_{target}_images.txt', 'test': f'yolo_{target}_images.txt', 'val': '',
                  'nc': n_classes, 'names': all_classes}
-    with open(out_path,'w',encoding='ascii') as f_out:
+    with open(out_path, 'w', encoding='ascii') as f_out:
         f_out.write('\n'.join(file_list))
     f_out.close()
-    with open(yaml_path,'w', encoding='ascii') as yaml_out:
+    with open(yaml_path, 'w', encoding='ascii') as yaml_out:
         yaml.dump(yaml_data, yaml_out, default_flow_style=None)
     yaml_out.close()
     print(all_classes)
     print(n_classes)
 
+
 if __name__ == '__main__':
     params = commonTools.parse_opt()
     yaml_data = customizedYaml.yaml_handler(params.yaml)
+    grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
     base_dir = yaml_data.data['base_path']
     target = 'genus'
     annotation_dir = os.path.join(base_dir, f'{target}_annotation')
     yolo_dir = os.path.join(annotation_dir, 'yolo')
-    yolo_prepare(yolo_dir,base_dir,target)
+    yolo_prepare(yolo_dir, base_dir, target, grid_dir)

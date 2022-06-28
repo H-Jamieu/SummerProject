@@ -12,7 +12,7 @@ def read_csv_data(src_dir):
             file.append(row[0])
             label.append(row[1])
     f_in.close()
-    return file,label
+    return file, label
 
 def split_data(X,Y, test_ratio=0.2, val_ratio=0.1):
     if test_ratio >0:
