@@ -95,6 +95,7 @@ def train_test_split(file_list, record, target, class_dict):
     """
     80% train, 10% validation, 10% test
     the splitting is based on the count of classes. Objects with at least 10 image would be used for training.
+    customized train-test split: count how many objects are there in each annotation and balance between the object count
     """
     for f in file_list:
         core_name, slide_name, grid_no = commonTools.keyword_from_path(f)

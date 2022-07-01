@@ -152,16 +152,20 @@ def label_annotations(folder, label_record, target, pseudo_dir, out_dir, image_p
     for annotations in commonTools.files(pseudo_folder):
         full_info = process_full_info(Path(annotations).stem.split('_'))
         if full_info == 0:
-            print(annotations, ' not match the required format')
+            #print(annotations, ' not match the required format')
             continue
         if full_info['grid_no'] == 0:
             print('Ignore grid 0')
             continue
+        matched_slides = label_record[(label_record[0].str.lower() == full_info['core'].lower()) &
+                                      (label_record[1].str.lower() == full_info['slide'].lower())]
+        if len(matched_slides)== 0:
+            print(full_info['core'], full_info['slide'], 'not from valid slide')
+            break
         # Test first. If successful, record the process.
         # A database would be extremely useful
         list_60.remove(full_info['grid_no'])
-        matched_grids = label_record[(label_record[0] == full_info['core']) & (label_record[1] == full_info['slide']) &
-                                     (label_record[2] == full_info['grid_no'])]
+        matched_grids = matched_slides[(matched_slides[2] == full_info['grid_no'])]
         out_folder = os.path.join(out_dir, folder)
         if not os.path.isdir(out_folder):
             os.mkdir(out_folder)
@@ -172,7 +176,7 @@ def label_annotations(folder, label_record, target, pseudo_dir, out_dir, image_p
             if empty_annotation is None:
                 continue
             empty_annotation.write(os.path.join(out_folder, annotations))
-            print(annotations, ' not being recorded in the annotation file')
+            #print(annotations, ' not being recorded in the annotation file')
             continue
         annotation_name = create_annotation_name(matched_grids, full_info['grid_no'], target_no)
         xml_annotation = ET.parse(os.path.join(pseudo_folder, annotations))
