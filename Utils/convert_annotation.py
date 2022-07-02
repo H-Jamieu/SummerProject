@@ -25,16 +25,31 @@ def get_target(target):
         return 9
     return 0
 
+def get_core_slide(annotation_dir):
+    annotated_folders = os.listdir(annotation_dir)
+    search_names = []
+    for a in annotated_folders:
+        core, slide = commonTools.keyword_from_folder(a)
+        search_name = core + "_" + slide
+        search_name = search_name.lower()
+        search_names.append(search_name)
+    return search_names
 
-def getting_all_labels(record_file, target):
+
+def getting_all_labels(record_file, target, annotation_dir):
     """
     Input the record file and target. Get a unique list of all names for dictionary
     """
     target_no = get_target(target)
+    search_names = get_core_slide(annotation_dir)
+    record_file['search name'] = record_file[0] + '_' + record_file[1]
+    matched_records = record_file[record_file['search name'].str.lower().isin(search_names)]
+    lost_records = record_file[~record_file['search name'].str.lower().isin(search_names)]
+    lost_records.to_csv('lost_records.csv', index=False, header=None)
     if target_no == 8:
-        return record_file[8].value_counts().index.tolist()
+        return matched_records[8].value_counts().index.tolist()
     if target_no == 9:
-        species = record_file[8] + ' ' + record_file[9]
+        species = matched_records[8] + ' ' + matched_records[9]
         return species.value_counts().index.tolist()
     raise 'Invalid target, should be either genus or species'
 
@@ -128,10 +143,10 @@ def convertion_preparation(pascal_dir, yolo_dir, class_dict):
         pool.map(partial(convert_entrance, source_dir = pascal_dir, output_dir = yolo_dir, class_dict = class_dict
                          ), all_folders)
 
-def build_class_dict(record_file, target):
+def build_class_dict(record_file, target, annotation_dir):
     if target == 'pseudo':
         return [0]
-    return getting_all_labels(record_file, target)
+    return getting_all_labels(record_file, target, annotation_dir)
 
 
 if __name__ == '__main__':
@@ -139,12 +154,12 @@ if __name__ == '__main__':
     yaml_data = customizedYaml.yaml_handler(params.yaml)
     base_dir = yaml_data.data['base_path']
     grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
-    target = 'pseudo'
+    target = 'genus'
     annotation_dir = os.path.join(base_dir, f'{target}_annotation')
     pascal_dir = os.path.join(annotation_dir, 'pascal_voc')
     yolo_dir = os.path.join(annotation_dir, 'yolo')
     master_df = pd.read_csv(os.path.join(base_dir, 'all_records.csv'), header=None)
-    classes = build_class_dict(master_df, target)
+    classes = build_class_dict(master_df, target, pascal_dir)
     convertion_preparation(pascal_dir,yolo_dir,classes)
     classes_file = os.path.join(base_dir, f'{target}_classes.txt')
     with open(classes_file, 'w', encoding='ascii') as f_out:

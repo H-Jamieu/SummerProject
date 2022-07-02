@@ -3,6 +3,7 @@ import os
 import cv2
 import commonTools
 import customizedYaml
+import xml.etree.ElementTree as ET
 
 """
 The script is creating the training set for classification. Ideally, we should output images under:
@@ -84,4 +85,6 @@ def annotation2img(annotation_path):
     return img_path.replace(f'species_annotation{os.sep}pascal_voc', 'grid_images')
 
 def create_class_images(grid_dir, annotation_dir):
-    for folders in commonTools.folders(annotation_dir):
+    xml_annotation = ET.parse(annotation_dir)
+    grid_image = cv2.imread(grid_dir)
+

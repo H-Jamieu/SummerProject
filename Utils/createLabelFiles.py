@@ -152,7 +152,8 @@ def label_annotations(folder, label_record, target, pseudo_dir, out_dir, image_p
     for annotations in commonTools.files(pseudo_folder):
         full_info = process_full_info(Path(annotations).stem.split('_'))
         if full_info == 0:
-            #print(annotations, ' not match the required format')
+            # aiming at FD403, PPP series
+            # print(annotations, ' not match the required format')
             continue
         if full_info['grid_no'] == 0:
             print('Ignore grid 0')

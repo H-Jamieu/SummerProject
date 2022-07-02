@@ -68,6 +68,23 @@ def keyword_from_path(full_path):
         raise f'File name {base_name} not matching the required format.'
     return core_name, slide_name, grid_no
 
+def keyword_from_folder(folder_name):
+    """
+    The function is used for return key word for searching grids by using the full file path or file name.
+    return the keywords for searching in the data sheet: core_name, slide_name, grid_no
+    """
+    base_name = os.path.basename(folder_name).split('.')[0]
+    full_path_data = base_name.split('_')
+    if len(full_path_data) == 3:
+        core_name = full_path_data[0]
+        slide_name = full_path_data[1]
+    elif len(full_path_data) == 4:
+        core_name = full_path_data[0]
+        slide_name = full_path_data[1] + '_' + full_path_data[2]
+    else:
+        raise f'File name {base_name} not matching the required format.'
+    return core_name, slide_name
+
 def get_target(target):
     if bool(re.search('genus', target.lower())):
         return 8
