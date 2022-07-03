@@ -18,6 +18,7 @@ def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--yaml', type=str, default='./format.yaml', help='format yaml path')
     parser.add_argument('--mode', type=int, default=1, help='for set the mode of execution')
+    parser.add_argument('--target', type=str, default='genus', help='target for operations, genus or species')
     opt = parser.parse_args()
     return opt
 

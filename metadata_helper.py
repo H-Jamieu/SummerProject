@@ -1,10 +1,10 @@
 # Extract metadata from images. Metadata includes image size, class count etc.
 
-import numpy as np
 from PIL import Image
 import os
 import csv
 import pandas as pd
+import Utils.commonTools as commonTools
 
 
 def read_image_size(img):
@@ -157,6 +157,42 @@ def image_by_source():
 
     return 0
 
+def replica(obj, rep):
+    return [obj] * rep
+
+def build_label_csv(image_path):
+    all_species_labels = []
+    all_files = []
+    all_genus_labels = []
+    all_classes = os.listdir(image_path)
+    for classe in all_classes:
+        species = classes
+        genus = classe.split(' ')[0]
+
+        walk_in = os.path.join(image_path, classe)
+        files = os.listdir(walk_in)
+        full_file_path = [os.path.join(walk_in,f) for f in files]
+        species_label = replica(species, len(files))
+        genus_label = replica(genus,len(files))
+        all_files+=full_file_path
+        all_species_labels+=species_label
+        all_genus_labels+=genus_label
+    with open('ostracods_species.csv', 'w', encoding='ascii') as sp_out:
+        writer = csv.writer(sp_out)
+        for file, label in zip(all_files, all_species_labels):
+            row = []
+            row.append(file)
+            row.append(label)
+            writer.writerow(row)
+    sp_out.close()
+    with open('ostracods_genus.csv', 'w', encoding='ascii') as ge_out:
+        writer = csv.writer(ge_out)
+        for file, label in zip(all_files, all_genus_labels):
+            row = []
+            row.append(file)
+            row.append(label)
+            writer.writerow(row)
+    ge_out.close()
 
 if __name__ == '__main__':
     flag = 1

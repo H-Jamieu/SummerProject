@@ -194,10 +194,6 @@ def label_annotations(folder, label_record, target, pseudo_dir, out_dir, image_p
             empty_annotation.write(os.path.join(out_folder, xml_file))
 
 
-def replica(obj, rep):
-    return [obj] * rep
-
-
 @contextmanager
 def poolcontext(*args, **kwargs):
     pool = multiprocessing.Pool(*args, **kwargs)
@@ -224,7 +220,7 @@ if __name__ == '__main__':
     yaml_data = customizedYaml.yaml_handler(params.yaml)
     base_dir = yaml_data.data['base_path']
     grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
-    target = 'genus'
+    target = 'species'
     yaml_data.data[target+'_annotation'] = yaml_data.build_new_path('base_path', target+'_annotation')
     yaml_data.data['pseudo_annotation'] = yaml_data.build_new_path('base_path', 'pseudo_annotation')
     pseudo_pascal_dir = yaml_data.build_new_path('pseudo_annotation', 'pascal_voc')
