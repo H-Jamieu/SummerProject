@@ -118,7 +118,9 @@ def init_class_dir(image_path):
 
 
 def create_class_images(annotation_dir, class_dir):
+    # -----------------------debug only--------------------------
     class_dir = 'E:\data\ostracods_id\class_images'
+    # -----------------------debug only -------------------------
     xml_annotation = ET.parse(annotation_dir)
     grid_dir = annotation2img(annotation_dir)
     if not os.path.isfile(grid_dir):
@@ -139,7 +141,9 @@ def create_class_images(annotation_dir, class_dir):
 
 
 def make_class_files(annotation_base_dir, class_dir):
-    annotation_base_dir = 'E:\data\ostracods_id\species_annotation\pascal_voc'
+    # -------------debug only-----------------------
+    # annotation_base_dir = 'E:\data\ostracods_id\species_annotation\pascal_voc'
+    # ------------------debug only-------------------
     all_annotations = []
     for folder in commonTools.folders(annotation_base_dir):
         annotation_folder = os.path.join(annotation_base_dir, folder)

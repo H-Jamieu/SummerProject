@@ -160,15 +160,20 @@ def image_by_source():
 def replica(obj, rep):
     return [obj] * rep
 
-def build_label_csv(image_path):
+def build_label_csv(image_path, species_class_path, genus_class_path):
     all_species_labels = []
     all_files = []
     all_genus_labels = []
     all_classes = os.listdir(image_path)
+    f_species = open(species_class_path, 'r', encoding='ascii')
+    species_classes = f_species.read().splitlines()
+    f_species.close()
+    f_genus = open(genus_class_path, 'r', encoding='ascii')
+    genus_classes = f_genus.read().splitlines()
+    f_genus.close()
     for classe in all_classes:
-        species = classes
+        species = classe
         genus = classe.split(' ')[0]
-
         walk_in = os.path.join(image_path, classe)
         files = os.listdir(walk_in)
         full_file_path = [os.path.join(walk_in,f) for f in files]
@@ -177,29 +182,31 @@ def build_label_csv(image_path):
         all_files+=full_file_path
         all_species_labels+=species_label
         all_genus_labels+=genus_label
-    with open('ostracods_species.csv', 'w', encoding='ascii') as sp_out:
+    with open('ostracods_species.csv', 'w', encoding='ascii', newline='') as sp_out:
         writer = csv.writer(sp_out)
         for file, label in zip(all_files, all_species_labels):
             row = []
             row.append(file)
-            row.append(label)
+            row.append(species_classes.index(label))
             writer.writerow(row)
     sp_out.close()
-    with open('ostracods_genus.csv', 'w', encoding='ascii') as ge_out:
+    with open('ostracods_genus.csv', 'w', encoding='ascii', newline='') as ge_out:
         writer = csv.writer(ge_out)
         for file, label in zip(all_files, all_genus_labels):
             row = []
             row.append(file)
-            row.append(label)
+            row.append(genus_classes.index(label))
             writer.writerow(row)
     ge_out.close()
 
 if __name__ == '__main__':
-    flag = 1
-    if flag ==0:
-        treshold = 20
-        classes = load_csv('input.csv', 'output.csv', './Plaindata')
-        print(classes)
-        label_genus('input.csv', 'genus.csv', 'genus_guide.csv')
-        label_species('input.csv', 'species.csv', 'species_guide.csv')
-    image_by_source()
+    # flag = 1
+    # if flag ==0:
+    #     treshold = 20
+    #     classes = load_csv('input.csv', 'output.csv', './Plaindata')
+    #     print(classes)
+    #     label_genus('input.csv', 'genus.csv', 'genus_guide.csv')
+    #     label_species('input.csv', 'species.csv', 'species_guide.csv')
+    # image_by_source()
+    build_label_csv('E:\data\ostracods_id\class_images', 'D:\Competetion_data\Ostracods_data\species_classes.txt',
+                    'D:\Competetion_data\Ostracods_data\genus_classes.txt')
