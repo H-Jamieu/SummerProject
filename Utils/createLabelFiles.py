@@ -220,7 +220,7 @@ if __name__ == '__main__':
     yaml_data = customizedYaml.yaml_handler(params.yaml)
     base_dir = yaml_data.data['base_path']
     grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
-    target = 'species'
+    target = params.target
     yaml_data.data[target+'_annotation'] = yaml_data.build_new_path('base_path', target+'_annotation')
     yaml_data.data['pseudo_annotation'] = yaml_data.build_new_path('base_path', 'pseudo_annotation')
     pseudo_pascal_dir = yaml_data.build_new_path('pseudo_annotation', 'pascal_voc')

@@ -154,7 +154,7 @@ if __name__ == '__main__':
     yaml_data = customizedYaml.yaml_handler(params.yaml)
     base_dir = yaml_data.data['base_path']
     grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
-    target = 'species'
+    target = params.target
     annotation_dir = os.path.join(base_dir, f'{target}_annotation')
     pascal_dir = os.path.join(annotation_dir, 'pascal_voc')
     yolo_dir = os.path.join(annotation_dir, 'yolo')

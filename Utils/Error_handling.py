@@ -83,6 +83,16 @@ def getting_error(error_out_path, grid_path, error_info):
     return error_info
 
 
+def remove_error_files(full_record, error_record):
+    full_record[2] = full_record[2].astype(str)
+    error_record[2] = error_record[2].astype(str)
+    full_record['search name'] = full_record[0] + '_' + full_record[1] + '_grid_' + full_record[2]
+    error_record['search name'] = error_record[0] + '_' + error_record[1] + '_grid_' + error_record[2]
+    error_files = error_record['search name'].tolist()
+    error_free = full_record[~full_record['search name'].isin(error_files)]
+    return error_free
+
+
 if __name__ == '__main__':
     '''
     All IO should be handled in main or specially designed IO functions
@@ -92,7 +102,13 @@ if __name__ == '__main__':
     base_path = yaml_data.get_data('base_path')
     error_path = yaml_data.build_new_path('base_path', 'error_record.csv')
     grid_path = yaml_data.build_new_path('base_path', 'grid_images')
-    error_out_path = yaml_data.build_new_path('base_path', 'errors')
-    error_info = pd.read_csv(error_path)
-    error_info = getting_error(error_out_path, grid_path, error_info)
-    error_info.to_csv(error_path, index=False)
+    error_info = pd.read_csv(error_path, header=None)
+    if params.mode == 0:
+        error_out_path = yaml_data.build_new_path('base_path', 'errors')
+        error_info = getting_error(error_out_path, grid_path, error_info)
+        error_info.to_csv(error_path, index=False)
+    if params.mode == 1:
+        all_records = pd.read_csv(os.path.join(base_path, 'all_records_raw.csv'), header=None)
+        error_free = remove_error_files(all_records, error_info)
+        error_free_out_path = os.path.join(base_path, 'all_records.csv')
+        error_free.to_csv(error_free_out_path, columns=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], header=None, index=False)

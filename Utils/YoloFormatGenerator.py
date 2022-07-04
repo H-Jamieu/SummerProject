@@ -1,4 +1,4 @@
-from DummyImageGenerator import GenerateDummy
+# from DummyImageGenerator import GenerateDummy
 import random
 import os
 import csv
@@ -113,9 +113,9 @@ def yolo_prepare(source_dir, base_dir, target, grid_dir):
     n_classes = len(all_classes)
     file_list = generate_file_list(source_dir, grid_dir)
     out_path = os.path.join(base_dir, f'yolo_{target}_images.txt')
-    yaml_path = os.path.join(base_dir, 'yolo_test.yaml')
-    yaml_data = {'path': base_dir, 'train': f'yolo_{target}_images.txt', 'test': f'yolo_{target}_images.txt', 'val': '',
-                 'nc': n_classes, 'names': all_classes}
+    yaml_path = os.path.join(base_dir, f'yolo_{target}.yaml')
+    yaml_data = {'path': base_dir, 'train': f'autosplit_{target}_train.txt', 'test': f'autosplit_{target}_test.txt',
+                 'val': f'autosplit_{target}_val.txt', 'nc': n_classes, 'names': all_classes}
     with open(out_path, 'w', encoding='ascii') as f_out:
         f_out.write('\n'.join(file_list))
     f_out.close()
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     yaml_data = customizedYaml.yaml_handler(params.yaml)
     grid_dir = yaml_data.build_new_path('base_path', 'grid_images')
     base_dir = yaml_data.data['base_path']
-    target = 'genus'
+    target = params.target
     annotation_dir = os.path.join(base_dir, f'{target}_annotation')
     yolo_dir = os.path.join(annotation_dir, 'yolo')
     yolo_prepare(yolo_dir, base_dir, target, grid_dir)
