@@ -81,7 +81,9 @@ class ostracod:
             return False
         height, width, channels = self.image.shape
         if width<=0 or height<=0:
-            print(f'{self.save_name} has invalid binding box, please fix the problem.')
+            print(f'{self.save_name} has invalid binding box, height and width are {height},'
+                  f'{width}, start point is ({self.x_min}, {self.y_min}), '
+                  f'end point is ({self.x_max}, {self.y_max}), please fix the problem.')
             return False
         return True
 

@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 import csv
+from collections import Counter
 
 # Idea: load from csv, split train file and test file
 
@@ -33,7 +34,7 @@ def write_splitted_data(X,Y,trg_dir):
     f_out.close()
 
 if __name__ == '__main__':
-    class_target = 'genus'
+    class_target = 'ostracods_species'
     src_dir = class_target+'.csv'
     train_dir = './Metadata/'+class_target+'_train.csv'
     val_dir = './Metadata/'+class_target+'_val.csv'
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     val_ratio = 0.1
 
     file, label = read_csv_data(src_dir)
+    print(len(Counter(label).keys()))
     X_train, Y_train, X_val, Y_val, X_test, Y_test = split_data(file, label, test_ratio, val_ratio)
     write_splitted_data(X_train, Y_train, train_dir)
     write_splitted_data(X_val, Y_val, val_dir)

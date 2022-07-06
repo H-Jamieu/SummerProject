@@ -4,7 +4,7 @@ from PIL import Image
 import os
 import csv
 import pandas as pd
-import Utils.commonTools as commonTools
+from collections import Counter
 
 
 def read_image_size(img):
@@ -160,7 +160,7 @@ def image_by_source():
 def replica(obj, rep):
     return [obj] * rep
 
-def build_label_csv(image_path, species_class_path, genus_class_path):
+def build_label_csv(image_path, species_class_path, genus_class_path, threashold = 10):
     all_species_labels = []
     all_files = []
     all_genus_labels = []
@@ -182,9 +182,26 @@ def build_label_csv(image_path, species_class_path, genus_class_path):
         all_files+=full_file_path
         all_species_labels+=species_label
         all_genus_labels+=genus_label
+    species_count = Counter(all_species_labels)
+    genus_count = Counter(all_genus_labels)
+    for species in species_count:
+        if species_count[species] < threashold:
+            species_classes.remove(species)
+    for genus in genus_count:
+        if genus_count[genus] < threashold:
+            genus_classes.remove(genus)
+    with open('ostracods_species_guide.txt', 'w',encoding='ascii') as f_out:
+        f_out.write('\n'.join(species_classes))
+    f_out.close()
+    with open('ostracods_genus_guide.txt', 'w', encoding='ascii') as f_out:
+        f_out.write('\n'.join(genus_classes))
+    f_out.close()
     with open('ostracods_species.csv', 'w', encoding='ascii', newline='') as sp_out:
         writer = csv.writer(sp_out)
         for file, label in zip(all_files, all_species_labels):
+            if species_count[label]<threashold:
+                print(label, 'has less than 10 images, skip.')
+                continue
             row = []
             row.append(file)
             row.append(species_classes.index(label))
@@ -193,6 +210,9 @@ def build_label_csv(image_path, species_class_path, genus_class_path):
     with open('ostracods_genus.csv', 'w', encoding='ascii', newline='') as ge_out:
         writer = csv.writer(ge_out)
         for file, label in zip(all_files, all_genus_labels):
+            if genus_count[label]<threashold:
+                print(label, 'has less than 10 images, skip.')
+                continue
             row = []
             row.append(file)
             row.append(genus_classes.index(label))

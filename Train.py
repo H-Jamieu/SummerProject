@@ -49,7 +49,7 @@ class CustomImageDataset(Dataset):
     def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
         """
         Initial function. Creates the instance.
-        :param annotations_file: The file containing image directory an labels (for train and validation)
+        :param annotations_file: The file containing image directory and labels (for train and validation)
         :param img_dir: The directory containing target images.
         :param transform: Transformation applied to images. Should be a torchvision.transform type.
         :param target_transform:
@@ -178,7 +178,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders,
 # Load train, test and validation data by phase. Phase = train, val and test. Target = genus and species
 def load_data(phase, target, d_transfroms, batch_size=16):
     data_path = './Metadata/' + target + '_' + phase + '.csv'
-    src_path = './Plaindata'
+    src_path = ''
     data_out = CustomImageDataset(data_path, src_path, d_transfroms)
     data_size = len(data_out)
     data_loader = DataLoader(data_out, batch_size=batch_size, shuffle=True)
