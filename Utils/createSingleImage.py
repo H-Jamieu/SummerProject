@@ -121,7 +121,7 @@ def init_class_dir(image_path):
 
 def create_class_images(annotation_dir, class_dir):
     # -----------------------debug only--------------------------
-    class_dir = 'E:\data\ostracods_id\class_images'
+    # class_dir = 'E:\data\ostracods_id\class_images'
     # -----------------------debug only -------------------------
     xml_annotation = ET.parse(annotation_dir)
     grid_dir = annotation2img(annotation_dir)

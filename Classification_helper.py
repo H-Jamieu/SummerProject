@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import time
 import torch
@@ -37,9 +39,11 @@ def extract_class_label(target):
     :param target: Species or genus.
     :return: List. List of genus or species.
     """
-    guideline_path = target + '_guide.csv'
-    guideline_data = pd.read_csv(guideline_path, header=None)
-    all_classes = guideline_data[0].values
+    guideline_path = target + '_guide.txt'
+    # guideline_data = pd.read_csv(guideline_path, header=None)
+    f = open(guideline_path, 'r', encoding='ascii')
+
+    all_classes = f.read().splitlines()
     return all_classes
 
 
@@ -56,7 +60,7 @@ def verify_model(model, test_loader, device, target, data_size, model_name):
     """
     since = time.time()
 
-    class_dict = get_class_meaning(target)
+    class_dict = extract_class_label(target)
     running_corrects = 0
     all_labels =[]
     all_paths = []
@@ -94,6 +98,9 @@ def verify_model(model, test_loader, device, target, data_size, model_name):
     f_guide.close()
     accu = running_corrects.double() / data_size
     print('Current test Acc: {:4f}'.format(accu))
+    acc4 = str(float("{0:.4f}".format(accu)))
+    new_out = './Results/' + str(int(since)) + '_' + target + '_' + model_name + acc4 + '_result.csv'
+    os.rename(outfile, new_out)
     return accu
 
 

@@ -111,6 +111,9 @@ def determine_model(arg_model, arg_pretrain, arg_classes):
     elif arg_model.lower() == 'vit_b_16':
         model = models.vit_b_16(pretrained=arg_pretrain)
         model.num_classes = arg_classes
+    elif arg_model.lower()=='efficient_v2':
+        model = models.efficientnet_v2_l(pretrained=arg_pretrain)
+        model.num_classes = arg_classes
     else:
         model = models.resnet50(pretrained=arg_pretrain)
         num_ftrs = model.fc.in_features

@@ -54,7 +54,7 @@ class CustomImageDataset(Dataset):
         :param transform: Transformation applied to images. Should be a torchvision.transform type.
         :param target_transform:
         """
-        self.img_labels = pd.read_csv(annotations_file)
+        self.img_labels = pd.read_csv(annotations_file, header=None)
         self.img_dir = img_dir
         self.transform = transform
         self.target_transform = target_transform
@@ -70,6 +70,7 @@ class CustomImageDataset(Dataset):
         label: label of training images.
         img_path: path to the image.
         """
+
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
         # image = read_image(img_path)
         image = Image.open(img_path)
@@ -227,11 +228,11 @@ def tune_train(config, model, target):
     model = model.to(device)
 
 
-def test_model(model, pre_trained_path, target, model_name):
+def test_model(model, pre_trained_path, target, model_name, mode):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.load_state_dict(torch.load(pre_trained_path, map_location=torch.device(device)))
     model = model.to(device)
-    test_data, data_size = load_data('test', target, data_transforms)
+    test_data, data_size = load_data(mode, target, data_transforms)
     verify_model(model, test_data, device, target, data_size, model_name)
 
 

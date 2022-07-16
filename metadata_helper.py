@@ -160,7 +160,12 @@ def image_by_source():
 def replica(obj, rep):
     return [obj] * rep
 
-def build_label_csv(image_path, species_class_path, genus_class_path, threashold = 10):
+def windows2linux(file):
+    file = file.replace("\\","/")
+    file = file.replace('E:','/mnt/e')
+    return file
+
+def build_label_csv(image_path, species_class_path, genus_class_path, threashold = 10, linux=False):
     all_species_labels = []
     all_files = []
     all_genus_labels = []
@@ -184,38 +189,44 @@ def build_label_csv(image_path, species_class_path, genus_class_path, threashold
         all_genus_labels+=genus_label
     species_count = Counter(all_species_labels)
     genus_count = Counter(all_genus_labels)
+    true_genus = []
+    true_spceies = []
     for species in species_count:
-        if species_count[species] < threashold:
-            species_classes.remove(species)
+        if species_count[species] >= threashold:
+            true_spceies.append(species)
     for genus in genus_count:
-        if genus_count[genus] < threashold:
-            genus_classes.remove(genus)
+        if genus_count[genus] >= threashold:
+            true_genus.append(genus)
+    if linux is True:
+        all_files_rep = all_files.copy()
+        all_files = [windows2linux(f) for f in all_files_rep]
+        del all_files_rep
     with open('ostracods_species_guide.txt', 'w',encoding='ascii') as f_out:
-        f_out.write('\n'.join(species_classes))
+        f_out.write('\n'.join(true_spceies))
     f_out.close()
     with open('ostracods_genus_guide.txt', 'w', encoding='ascii') as f_out:
-        f_out.write('\n'.join(genus_classes))
+        f_out.write('\n'.join(true_genus))
     f_out.close()
     with open('ostracods_species.csv', 'w', encoding='ascii', newline='') as sp_out:
         writer = csv.writer(sp_out)
         for file, label in zip(all_files, all_species_labels):
-            if species_count[label]<threashold:
+            if species_count[label] < threashold:
                 print(label, 'has less than 10 images, skip.')
                 continue
             row = []
             row.append(file)
-            row.append(species_classes.index(label))
+            row.append(true_spceies.index(label))
             writer.writerow(row)
     sp_out.close()
     with open('ostracods_genus.csv', 'w', encoding='ascii', newline='') as ge_out:
         writer = csv.writer(ge_out)
         for file, label in zip(all_files, all_genus_labels):
-            if genus_count[label]<threashold:
+            if genus_count[label] < threashold:
                 print(label, 'has less than 10 images, skip.')
                 continue
             row = []
             row.append(file)
-            row.append(genus_classes.index(label))
+            row.append(true_genus.index(label))
             writer.writerow(row)
     ge_out.close()
 
@@ -229,4 +240,4 @@ if __name__ == '__main__':
     #     label_species('input.csv', 'species.csv', 'species_guide.csv')
     # image_by_source()
     build_label_csv('E:\data\ostracods_id\class_images', 'D:\Competetion_data\Ostracods_data\species_classes.txt',
-                    'D:\Competetion_data\Ostracods_data\genus_classes.txt')
+                    'D:\Competetion_data\Ostracods_data\genus_classes.txt', linux=True)

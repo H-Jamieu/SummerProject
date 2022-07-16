@@ -39,7 +39,7 @@ def determine_model(arg_model, arg_pretrain, arg_classes):
         model = models.vgg19(pretrained=arg_pretrain)
         model.classifier[6] = torch.nn.Linear(in_features=4096, out_features=arg_classes)
     elif arg_model.lower() == 'efficientnet':
-        model = models.efficientnet_b7(pretrained=arg_pretrain)
+        model = models.efficientnet_b4(pretrained=arg_pretrain)
         num_ftrs = model.fc.in_features
         model.fc = torch.nn.Linear(num_ftrs, arg_classes)
     elif arg_model.lower() == 'convnext_tiny':
@@ -55,6 +55,9 @@ def determine_model(arg_model, arg_pretrain, arg_classes):
     elif arg_model.lower() == 'vit_b_16':
         model = models.vit_b_16(pretrained=arg_pretrain)
         model.num_classes = arg_classes
+    elif arg_model.lower()=='efficient_v2':
+        model = models.efficientnet_v2_l(pretrained=arg_pretrain)
+        model.num_classes = arg_classes
     else:
         model = models.resnet50(pretrained=arg_pretrain)
         num_ftrs = model.fc.in_features
@@ -69,7 +72,7 @@ parser.add_argument("--model_path",
 parser.add_argument("--model",
                     type=str,
                     default='resnet50',
-                    help="Model path for your classification task.")
+                    help="Model for your classification task.")
 parser.add_argument("--pretrained",
                     type=bool,
                     default=False,
@@ -89,7 +92,7 @@ parser.add_argument("--result_path",
                     help="The count of classes for classification.")
 parser.add_argument("--show_plot",
                     type=bool,
-                    default=True,
+                    default=False,
                     help="The count of classes for classification.")
 parser.add_argument("--target",
                     type=str,
@@ -108,4 +111,4 @@ else:
     target = args.target
     model_dir = MODEL_BASE+args.model_path
     print(model_dir)
-    test_model(model, model_dir, target, model_info)
+    test_model(model, model_dir, target, model_info, args.mode)

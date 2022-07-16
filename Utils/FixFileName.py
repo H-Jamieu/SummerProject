@@ -49,11 +49,11 @@ if __name__ == '__main__':
     image_path = yaml_data.build_new_path('base_path','raw_images')
     yaml_data.data['pseudo_annotation'] = yaml_data.build_new_path('base_path', 'pseudo_annotation')
     annotation_path = yaml_data.build_new_path('pseudo_annotation', 'pascal_voc')
-    wrong = 'HK14TLH1C_150_151'
+    wrong = 'HK14DB1C_88_892'
     # regex expression for the text pattern we want to replace
     # noted HK14DB1C_88_89(1) in regex should be HK14DB1C_88_89\(1\)
-    wrong_re = 'HK14TLH1C_150_151'
-    correct = 'HK14TLH1C_151_152'
+    wrong_re = 'HK14DB1C_88_892'
+    correct = 'HK14DB1C_88_89(2)'
     process_grid_names(grid_path, wrong, wrong_re,correct)
     process_image_names(image_path, wrong, wrong_re,correct)
     process_pseudo_annotations(annotation_path, wrong, wrong_re, correct)
